@@ -1,2 +1,5 @@
 #environment
 .venv
+
+#configs
+config.ini

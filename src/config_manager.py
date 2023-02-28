@@ -1,7 +1,10 @@
 import configparser
 import os
 
-
+'''
+ Esse arquivo descreve a classe que cria o arquivo de configuração 
+ e acessa seu conteúdo através de seus métodos
+'''
 class ConfigParser():
     def __init__(self):
         self.file = 'config.ini'
@@ -14,7 +17,7 @@ class ConfigParser():
             config.set('LDAP', 'username', 'user@domain')
             config.set('LDAP', 'password', 'password')
             config.set('LDAP', 'searchbase', 'dc=domain,dc=com')
-            config.set('LDAP', 'searchfilter', '(&(objectCategory=person)(objectClass=user)(sAMAccountName={current_user}))')
+            config.set('LDAP', 'searchfilter', '(&(objectCategory=person)(objectClass=user)(sAMAccountName={user}))')
             config.set('LDAP', 'attributes', 'displayName, mail, telephoneNumber, streetAddress, postalCode')
 
             config.add_section('Signature')
@@ -37,6 +40,3 @@ class ConfigParser():
     def get(self, section, option):
         value = self.config.get(section, option)
         return value
-        
-
-
