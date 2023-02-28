@@ -1,5 +1,7 @@
 #environment
 .venv
+.vscode
+.pytest_cache
 
 #configs
 config.ini
