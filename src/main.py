@@ -2,42 +2,8 @@ import os
 from configparser import ConfigParser
 from getpass import getuser
 from jinja2 import Environment, FileSystemLoader
-from ldap3 import Server, Connection, SUBTREE, ALL_OPERATIONAL_ATTRIBUTES
+from ldap_manager import ActiveDirectory
 
-
-
-class ActiveDirectory:
-    def __init__(self, config: ConfigParser):
-        self.config = config
-        self.server = Server(self.config['LDAP']['Server'])
-        self.username = self.config['LDAP']['Username']
-        self.password = self.config['LDAP']['Password']
-        self.search_base = self.config['LDAP']['SearchBase']
-        self.search_filter = self.config['LDAP']['SearchFilter']
-        self.attributes = [attr.strip() for attr in self.config['LDAP']['Attributes'].split(',')]
-        self.current_user = getuser()
-        # self.current_user = 'JRM' # Remover linha
-
-    def get_user_info(self):
-        with Connection(self.server, user=self.username, password=self.password) as conn:
-            conn.search(
-                search_base=self.search_base,
-                search_filter=str(self.search_filter).format(current_user=self.current_user),
-                search_scope=SUBTREE,
-                attributes=self.attributes + [ALL_OPERATIONAL_ATTRIBUTES],
-                paged_size=5,
-            )
-            if not conn.entries:
-                ErrorManager.raise_error(f'User "{self.current_user}" not found on AD.')
-            else:
-                print(f'Found user: "{self.current_user}"')
-                
-            user_entry = conn.entries[0]
-            user_info = {}
-            for attribute in self.attributes:
-                if attribute in user_entry:
-                    user_info[attribute] = user_entry[attribute].value
-            return user_info
 
 
 class Signature:
@@ -77,7 +43,7 @@ class OutlookSignature:
     def __init__(self, config_file: str):
         self.config = ConfigParser()
         self.config.read(config_file)
-        self.ad = ActiveDirectory(self.config)
+        self.ad = ActiveDirectory()
         self.signature = Signature(self.config, self.ad.get_user_info())
 
     def run(self):
