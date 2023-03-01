@@ -11,11 +11,12 @@ class Signature():
 
     def build_signature(self):
         template = self.template_env.get_template(self.template_file)
-        data = dict(Counter(self.user_info) + Counter(self.image_links))
+        data = dict(Counter(self.user_info).update(self.image_links))        
         
         return template.render(data)
     
-    # def save_signature(self):
-    #     signature = self.build_signature()
-    #     signature_dir = os.path.join(os.getenv('APPDATA'), 'Microsoft', 'Signatures')
-        
+    def save_signature(self):
+        signature = self.build_signature()
+        signature_dir = os.path.join(os.getenv('APPDATA'), 'Microsoft', 'Signatures')
+        with open(signature_dir + '/signature.htm', 'w') as f: #otmosimização 3
+            f.write(signature)
